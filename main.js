@@ -11,7 +11,7 @@
     if (v) el.textContent = v;
   });
   if (SITE.name) document.title = `${SITE.name} — ${SITE.tagline || ""}`;
-  $("#year").textContent = new Date().getFullYear();
+  const yearEl = $("#year"); if (yearEl) yearEl.textContent = new Date().getFullYear();
   if (SITE.contact) Object.assign($("#contact"), { href: SITE.contact, hidden: false });
 
   const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));

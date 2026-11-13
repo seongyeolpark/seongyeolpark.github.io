@@ -16,6 +16,8 @@ window.SITE = {
   tagline: "매일 여는 토스 미니앱 모음",
   description:
     "운세, 퀴즈, 습관 기록까지. 설치 없이 토스 안에서 바로 열리는 미니앱 15개를 만들고 있어요.",
+  company: "루핀(Loopin)", // 사이트 하단 사업자 정보
+  ceo: "박성열",
   contact: "", // 예: "mailto:hello@example.com" (비워두면 숨김)
 };
 

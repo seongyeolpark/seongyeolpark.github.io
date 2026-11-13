@@ -12,7 +12,7 @@
   /* ---------- 인트로 글자 ---------- */
   const word = $("#intro .intro-word");
   if (word) {
-    word.innerHTML = [...((window.SITE && window.SITE.name) || "매일앱")]
+    word.innerHTML = [...((window.SITE && window.SITE.name) || "Loopin")]
       .map((c, i) => `<span style="--i:${i}">${c}</span>`).join("");
     setTimeout(() => $("#intro")?.remove(), 2300);
   }

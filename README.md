@@ -1,4 +1,4 @@
-# 매일앱 — 토스 미니앱 모음
+# Loopin — 토스 미니앱 모음
 
 https://seongyeolpark.github.io
 

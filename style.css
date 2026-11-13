@@ -246,6 +246,9 @@ h2 { font-size: clamp(34px, 5vw, 56px); letter-spacing: -0.04em; line-height: 1.
 
 /* 푸터 */
 .footer { max-width: 1120px; margin: 0 auto; padding: 40px 24px 60px; display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+.footer .biz { color: #cfc9ea; margin-bottom: 6px; }
+.footer .biz b { color: var(--fg); font-weight: 600; }
+.footer .sep { margin: 0 10px; opacity: 0.35; }
 .footer .fine { font-size: 12px; margin-top: 6px; max-width: 640px; opacity: 0.8; }
 .footer a:hover { color: var(--fg); }
 

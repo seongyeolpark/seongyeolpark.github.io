@@ -155,10 +155,18 @@
       const c = e.target.closest(".card");
       if (c && !c.contains(e.relatedTarget)) { c.style.setProperty("--rx", "0deg"); c.style.setProperty("--ry", "0deg"); }
     });
+    // body에 변수를 쓰면 페이지 전체 스타일을 다시 계산하므로 빛 요소만 직접 움직임
+    const glow = $(".cursor-glow");
+    let gx = innerWidth / 2, gy = innerHeight * 0.3, tgx = gx, tgy = gy, gRun = false;
+    const glowStep = () => {
+      gx += (tgx - gx) * 0.15; gy += (tgy - gy) * 0.15;
+      glow.style.transform = `translate(${gx}px, ${gy}px)`;
+      if (Math.abs(tgx - gx) + Math.abs(tgy - gy) > 0.5) requestAnimationFrame(glowStep); else gRun = false;
+    };
     addEventListener("pointermove", (e) => {
-      document.body.style.setProperty("--mx", e.clientX + "px");
-      document.body.style.setProperty("--my", e.clientY + "px");
-    });
+      tgx = e.clientX; tgy = e.clientY;
+      if (!gRun) { gRun = true; requestAnimationFrame(glowStep); }
+    }, { passive: true });
   }
 
   /* ---------- 스크롤 등장 / 네비 ---------- */
@@ -176,11 +184,11 @@
   const cv = $("#stars"), ctx = cv.getContext("2d");
   let W, H, stars = [];
   const resize = () => {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const dpr = 1; // 작은 점이라 고해상도가 필요 없음
     W = innerWidth; H = innerHeight;
     cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + "px"; cv.style.height = H + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    stars = Array.from({ length: Math.round((W * H) / 9000) }, () => ({
+    stars = Array.from({ length: Math.min(140, Math.round((W * H) / 12000)) }, () => ({
       x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.3 + 0.2,
       v: Math.random() * 0.25 + 0.05, t: Math.random() * Math.PI * 2,
     }));
@@ -190,10 +198,14 @@
   let mx = -999, my = -999;
   addEventListener("pointermove", (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
   let meteors = [];
-  const draw = () => {
+  let last = 0;
+  const draw = (now = 0) => {
+    if (!reduced) requestAnimationFrame(draw);
+    if (document.hidden || now - last < 33) return; // 30fps면 충분
+    last = now;
     ctx.clearRect(0, 0, W, H);
     for (const s of stars) {
-      s.t += 0.02; s.y -= s.v; if (s.y < 0) { s.y = H; s.x = Math.random() * W; }
+      s.t += 0.04; s.y -= s.v * 2; if (s.y < 0) { s.y = H; s.x = Math.random() * W; }
       const dx = s.x - mx, dy = s.y - my, d = Math.hypot(dx, dy);
       if (d < 140) {
         ctx.globalAlpha = (1 - d / 140) * 0.55;
@@ -203,17 +215,16 @@
       ctx.globalAlpha = 0.35 + Math.sin(s.t) * 0.3 + (d < 140 ? 0.4 : 0);
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(s.x, s.y, s.r * (d < 140 ? 1.8 : 1), 0, 7); ctx.fill();
     }
-    if (Math.random() < 0.012) meteors.push({ x: Math.random() * W * 1.2, y: -20, v: 9 + Math.random() * 7, life: 1 });
+    if (Math.random() < 0.024) meteors.push({ x: Math.random() * W * 1.2, y: -20, v: 9 + Math.random() * 7, life: 1 });
     meteors = meteors.filter((m) => m.life > 0 && m.y < H + 50);
     for (const m of meteors) {
-      m.x -= m.v * 0.7; m.y += m.v * 0.5; m.life -= 0.012;
+      m.x -= m.v * 1.4; m.y += m.v; m.life -= 0.024;
       const g = ctx.createLinearGradient(m.x, m.y, m.x + 120, m.y - 85);
       g.addColorStop(0, "rgba(255,255,255,0.95)"); g.addColorStop(0.3, "rgba(196,181,253,0.5)"); g.addColorStop(1, "rgba(255,255,255,0)");
       ctx.globalAlpha = m.life; ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.lineCap = "round";
       ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x + 120, m.y - 85); ctx.stroke();
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(m.x, m.y, 1.8, 0, 7); ctx.fill();
     }
-    if (!reduced) requestAnimationFrame(draw);
   };
   draw();
 })();

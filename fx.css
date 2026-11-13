@@ -67,7 +67,6 @@ h1 .ch.sp { width: 0.28em; }
 }
 .phone-stage .phone {
   transform: rotateY(calc(-14deg + var(--ry, 0deg))) rotateX(calc(6deg + var(--rx, 0deg)));
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 /* 화면 속 리스트가 반짝이며 하이라이트 */
 .ps-item.glow { box-shadow: 0 0 0 2px var(--hl, #7c3aed), 0 8px 24px -6px var(--hl, #7c3aed); transform: scale(1.03); transition: all 0.4s; }
@@ -93,16 +92,16 @@ h1 .ch.sp { width: 0.28em; }
 .btn-primary, .nav .btn { transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, translate 0.2s ease-out; }
 .btn-primary::after {
   content: ""; position: absolute; inset: -3px; border-radius: inherit; z-index: -1; opacity: 0.7;
-  background: inherit; filter: blur(14px); animation: shimmer 6s linear infinite;
+  background: inherit; filter: blur(14px);
 }
 
 /* ---------- 커서 링 ---------- */
 #cursor {
   position: fixed; left: 0; top: 0; width: 36px; height: 36px; margin: -18px 0 0 -18px; z-index: 250; pointer-events: none;
-  border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.7); mix-blend-mode: difference;
+  border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); will-change: transform;
   transition: width 0.25s, height 0.25s, margin 0.25s, background 0.25s, border-color 0.25s;
 }
-#cursor.big { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgba(255,255,255,0.9); border-color: transparent; }
+#cursor.big { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.9); }
 #cursor.down { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
 
 /* ---------- 클릭 파티클 ---------- */

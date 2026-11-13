@@ -1,6 +1,6 @@
 (() => {
   const SITE = window.SITE || {};
-  const APPS = window.APPS || [];
+  const APPS = (window.APPS || []).map((a) => ({ ...a, link: a.link || `intoss://${a.appName}` }));
   const $ = (s, el = document) => el.querySelector(s);
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -29,6 +29,7 @@
       <h3>${esc(a.name)}</h3>
       <span class="tag">#${esc(a.tag || "앱")}</span>
       <p class="desc">${esc(a.desc)}</p>
+      ${a.note ? `<span class="note">${esc(a.note)}</span>` : ""}
       <span class="card-cta">토스에서 열기
         <span class="arrow"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </span>
@@ -82,13 +83,20 @@
   let current = null;
   const openApp = (a) => {
     track(a);
-    if (isMobile) { location.href = a.link; return; }
+    if (isMobile) {
+      location.href = a.link;
+      // 토스 앱이 없거나 링크가 열리지 않으면 검색 안내
+      const t = setTimeout(() => { if (!document.hidden) toast(`토스 앱에서 '${a.name}'을(를) 검색해 보세요`, 4000); }, 1600);
+      addEventListener("visibilitychange", () => clearTimeout(t), { once: true });
+      return;
+    }
     current = a;
     $("#modal-title").textContent = a.name;
     const mi = $("#modal-icon");
     mi.innerHTML = iconHTML(a);
     mi.style.background = `linear-gradient(135deg,${a.colors?.[0]},${a.colors?.[1]})`;
     $("#open-link").href = a.link;
+    $("#modal-search").textContent = a.name;
     const qr = $("#qr");
     qr.innerHTML = "";
     if (window.QRCode) new QRCode(qr, { text: a.link, width: 368, height: 368, colorDark: "#0e0c1d", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
@@ -100,7 +108,7 @@
   modal.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) closeModal(); });
   addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
-  const toast = (msg) => { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 1800); };
+  const toast = (msg, ms = 1800) => { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), ms); };
   $("#copy-link").addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(current.link); toast("링크를 복사했어요"); }
     catch { toast("복사에 실패했어요"); }

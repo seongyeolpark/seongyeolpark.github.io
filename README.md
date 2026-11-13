@@ -40,4 +40,6 @@ python3 -m http.server 8000
 ```
 
 ## 배포 (GitHub Pages)
-저장소 Settings → Pages → Branch를 이 브랜치(또는 main)의 `/ (root)`로 지정하면 됩니다.
+`main`에 머지하면 GitHub Pages가 1~2분 뒤 자동으로 배포합니다(Settings → Pages: `main`, `/ (root)`).
+
+작업 기록은 `WORKLOG.md`, 작업 규칙은 `CLAUDE.md`에 있습니다.

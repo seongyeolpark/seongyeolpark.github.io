@@ -59,7 +59,9 @@
   });
   stage?.appendChild(ring);
   let heroVisible = true;
-  if (stage) new IntersectionObserver(([e]) => (heroVisible = e.isIntersecting)).observe(stage);
+  const wakeOrbit = () => { if (heroVisible && !document.hidden && !orbitRunning) { orbitRunning = true; requestAnimationFrame(orbit); } };
+  if (stage) new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; wakeOrbit(); }).observe(stage);
+  document.addEventListener("visibilitychange", () => wakeOrbit());
   let t0 = performance.now();
   const orbit = (now) => {
     if (heroVisible && stage) {
@@ -73,13 +75,14 @@
         const y = z * Ry + Math.sin(t * 1.3 + i) * 8;
         const s = 0.62 + (z + 1) * 0.28;
         el.style.transform = `translate(${x}px, ${y}px) scale(${s}) rotate(${Math.cos(a) * 12}deg)`;
-        el.style.zIndex = z > 0 ? 10 : 1;
-        el.style.opacity = (0.35 + (z + 1) * 0.33).toFixed(2);
-        el.style.filter = z < -0.2 ? `blur(${(-z * 2).toFixed(1)}px)` : "none";
+        const zi = z > 0 ? "10" : "1";
+        if (el.style.zIndex !== zi) el.style.zIndex = zi;
+        el.style.opacity = (0.3 + (z + 1) * 0.35).toFixed(2);
       });
     }
-    requestAnimationFrame(orbit);
+    if (heroVisible && !document.hidden) requestAnimationFrame(orbit); else orbitRunning = false;
   };
+  let orbitRunning = true;
   requestAnimationFrame(orbit);
 
   /* 폰 화면 속 항목을 차례로 반짝 */
@@ -95,11 +98,17 @@
 
   /* ---------- 마우스 시차: 폰 기울기 ---------- */
   if (finePointer && stage) {
+    const phone = $(".phone", stage);
+    let rx = 0, ry = 0, trx = 0, try_ = 0, tiltRun = false;
+    const tilt = () => {
+      rx += (trx - rx) * 0.1; ry += (try_ - ry) * 0.1;
+      phone.style.transform = `rotateY(${(-14 + ry).toFixed(2)}deg) rotateX(${(6 + rx).toFixed(2)}deg)`;
+      if (Math.abs(trx - rx) + Math.abs(try_ - ry) > 0.05) requestAnimationFrame(tilt); else tiltRun = false;
+    };
     addEventListener("pointermove", (e) => {
-      const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
-      stage.style.setProperty("--ry", `${nx * 22}deg`);
-      stage.style.setProperty("--rx", `${-ny * 16}deg`);
-      $$(".blob").forEach((b, i) => (b.style.translate = `${nx * (i + 1) * -40}px ${ny * (i + 1) * -30}px`));
+      if (!heroVisible) return;
+      try_ = (e.clientX / innerWidth - 0.5) * 22; trx = -(e.clientY / innerHeight - 0.5) * 16;
+      if (!tiltRun) { tiltRun = true; requestAnimationFrame(tilt); }
     }, { passive: true });
   }
 
@@ -121,25 +130,27 @@
   if (finePointer) {
     const cur = $("#cursor");
     let cx = innerWidth / 2, cy = innerHeight / 2, tx = cx, ty = cy;
+    let curRun = false, big = false;
     addEventListener("pointermove", (e) => {
       tx = e.clientX; ty = e.clientY;
-      cur.classList.toggle("big", !!e.target.closest(".card, .btn, .chip, a"));
+      const nb = !!e.target.closest(".card, .btn, .chip, a");
+      if (nb !== big) { big = nb; cur.classList.toggle("big", big); }
+      if (!curRun) { curRun = true; requestAnimationFrame(follow); }
     }, { passive: true });
     addEventListener("pointerdown", () => cur.classList.add("down"));
     addEventListener("pointerup", () => cur.classList.remove("down"));
     const follow = () => {
-      cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2;
+      cx += (tx - cx) * 0.25; cy += (ty - cy) * 0.25;
       cur.style.transform = `translate(${cx}px, ${cy}px)`;
-      requestAnimationFrame(follow);
+      if (Math.abs(tx - cx) + Math.abs(ty - cy) > 0.3) requestAnimationFrame(follow); else curRun = false;
     };
-    follow();
   }
 
   /* ---------- 클릭 파티클 폭죽 ---------- */
   const cv = $("#burst"), ctx = cv.getContext("2d");
   let parts = [], running = false;
   const fit = () => {
-    const d = Math.min(devicePixelRatio || 1, 2);
+    const d = 1;
     cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0);
   };
   fit(); addEventListener("resize", fit);

@@ -28,11 +28,11 @@ a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
 
 /* ---------- 배경 ---------- */
-.aurora { position: fixed; inset: 0; z-index: -3; overflow: hidden; filter: blur(90px) saturate(140%); opacity: 0.55; }
-.blob { position: absolute; border-radius: 50%; mix-blend-mode: screen; animation: float 22s var(--ease) infinite alternate; }
-.b1 { width: 55vmax; height: 55vmax; background: var(--c1); top: -20vmax; left: -15vmax; }
-.b2 { width: 45vmax; height: 45vmax; background: var(--c2); top: 20vh; right: -18vmax; animation-delay: -7s; animation-duration: 26s; }
-.b3 { width: 40vmax; height: 40vmax; background: var(--c3); bottom: -20vmax; left: 25vw; animation-delay: -12s; animation-duration: 30s; opacity: 0.7; }
+.aurora { position: fixed; inset: 0; z-index: -3; overflow: hidden; opacity: 0.85; contain: strict; }
+.blob { position: absolute; border-radius: 50%; background: radial-gradient(circle closest-side, var(--bc) 0%, color-mix(in srgb, var(--bc) 80%, transparent) 30%, color-mix(in srgb, var(--bc) 35%, transparent) 62%, transparent 100%); animation: float 22s var(--ease) infinite alternate; will-change: transform; }
+.b1 { width: 75vmax; height: 75vmax; --bc: var(--c1); top: -20vmax; left: -15vmax; }
+.b2 { width: 65vmax; height: 65vmax; --bc: var(--c2); top: 20vh; right: -18vmax; animation-delay: -7s; animation-duration: 26s; }
+.b3 { width: 60vmax; height: 60vmax; --bc: var(--c3); bottom: -20vmax; left: 25vw; animation-delay: -12s; animation-duration: 30s; opacity: 0.7; }
 @keyframes float {
   0% { transform: translate(0, 0) scale(1) rotate(0deg); }
   50% { transform: translate(8vw, 6vh) scale(1.15) rotate(40deg); }
@@ -40,16 +40,14 @@ img { max-width: 100%; display: block; }
 }
 #stars { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
 .grain {
-  position: fixed; inset: -50%; z-index: -1; pointer-events: none; opacity: 0.06;
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grain 8s steps(10) infinite;
 }
 @keyframes grain { 0%,100% { transform: translate(0,0); } 30% { transform: translate(-5%, 3%); } 60% { transform: translate(4%, -6%); } 90% { transform: translate(-2%, 5%); } }
 .cursor-glow {
   position: fixed; width: 480px; height: 480px; border-radius: 50%; pointer-events: none; z-index: -1;
   background: radial-gradient(circle, rgba(168, 85, 247, 0.22), transparent 60%);
-  transform: translate(-50%, -50%); left: var(--mx, 50%); top: var(--my, 30%);
-  transition: left 0.25s ease-out, top 0.25s ease-out;
+  left: -240px; top: -240px; transform: translate(50vw, 30vh); will-change: transform;
 }
 
 /* ---------- 네비 ---------- */
@@ -58,8 +56,7 @@ img { max-width: 100%; display: block; }
   width: min(1120px, calc(100% - 32px));
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 12px 10px 20px; border-radius: 999px;
-  background: rgba(14, 12, 29, 0.55); border: 1px solid var(--line);
-  backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+  background: rgba(14, 12, 29, 0.78); border: 1px solid var(--line);
   transition: background 0.3s;
 }
 .nav.scrolled { background: rgba(14, 12, 29, 0.85); }
@@ -85,7 +82,7 @@ img { max-width: 100%; display: block; }
 .btn-primary svg { transition: transform 0.25s var(--ease); }
 .btn-primary:hover svg { transform: translateX(4px); }
 @keyframes shimmer { to { background-position: 300% 0; } }
-.btn-ghost { background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(10px); }
+.btn-ghost { background: rgba(255,255,255,0.07); border: 1px solid var(--line); }
 .btn-ghost:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
 .nav .btn-sm { color: var(--fg); background: var(--fg); color: var(--bg); }
 
@@ -186,7 +183,6 @@ h2 { font-size: clamp(34px, 5vw, 56px); letter-spacing: -0.04em; line-height: 1.
   background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015));
   border: 1px solid var(--line); overflow: hidden; cursor: pointer; isolation: isolate;
   transform-style: preserve-3d; transition: transform 0.4s var(--ease), border-color 0.3s, opacity 0.4s, scale 0.4s;
-  will-change: transform;
 }
 .card.hide { display: none; }
 .card::before { /* 마우스 따라가는 빛 */

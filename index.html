@@ -52,7 +52,7 @@
       <dl class="stats reveal">
         <div><dt id="stat-apps">0</dt><dd>운영 중인 앱</dd></div>
         <div><dt>0초</dt><dd>설치 시간</dd></div>
-        <div><dt>100%</dt><dd>무료</dd></div>
+        <div><dt>매일</dt><dd>새로 바뀌는 콘텐츠</dd></div>
       </dl>
 
       <!-- 떠다니는 폰 목업 -->
@@ -89,7 +89,7 @@
       <ol class="steps">
         <li class="step reveal"><span class="step-no">01</span><h3>앱 고르기</h3><p>마음에 드는 앱 카드를 눌러주세요.</p></li>
         <li class="step reveal"><span class="step-no">02</span><h3>토스에서 열기</h3><p>토스 앱이 열리면서 바로 실행돼요. 따로 설치할 필요 없어요.</p></li>
-        <li class="step reveal"><span class="step-no">03</span><h3>매일 즐기기</h3><p>토스 홈에서 언제든 다시 찾아올 수 있어요.</p></li>
+        <li class="step reveal"><span class="step-no">03</span><h3>매일 즐기기</h3><p>토스 앱 검색창에 앱 이름을 치면 언제든 다시 찾을 수 있어요.</p></li>
       </ol>
     </section>
 
@@ -98,14 +98,17 @@
       <div class="cta-card reveal">
         <div class="cta-glow"></div>
         <h2>새로운 앱이 계속 나와요 ✨</h2>
-        <p>지금 가장 인기 있는 앱부터 시작해보세요.</p>
+        <p>가장 많이 쓰는 ‘오늘의 운세’부터 시작해 보세요.</p>
         <a href="#" class="btn btn-primary" id="cta-top">인기 앱 열기</a>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <p>© <span id="year"></span> <span data-site="name"></span>. Built for Apps in Toss.</p>
+    <div>
+      <p>© <span id="year"></span> <span data-site="name"></span>. 토스 미니앱(앱인토스) 개인 개발자.</p>
+      <p class="fine">이 사이트는 개인이 운영하며 토스(비바리퍼블리카)의 공식 사이트가 아니에요. 로또 추첨기는 재미용으로 당첨을 보장하지 않고, 두뇌 체크는 의학적 진단이 아니에요.</p>
+    </div>
     <a id="contact" hidden>문의하기</a>
   </footer>
 
@@ -118,6 +121,7 @@
       <h3 id="modal-title"></h3>
       <p class="modal-desc">휴대폰 카메라로 QR을 찍으면<br />토스에서 바로 열려요</p>
       <div class="qr" id="qr"></div>
+      <p class="modal-search">안 열리면 토스 앱에서 <b id="modal-search"></b> 검색</p>
       <div class="modal-actions">
         <button class="btn btn-ghost btn-sm" id="copy-link">링크 복사</button>
         <a class="btn btn-primary btn-sm" id="open-link" target="_blank" rel="noopener">그래도 열기</a>

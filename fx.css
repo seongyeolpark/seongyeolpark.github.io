@@ -1,0 +1,150 @@
+/* ==========================================================
+   fx.css — 화려한 효과 모음 (동작 줄이기 설정이면 모두 꺼짐)
+   ========================================================== */
+
+/* ---------- 인트로 ---------- */
+#intro {
+  position: fixed; inset: 0; z-index: 300; display: grid; place-items: center;
+  background: var(--bg); pointer-events: none;
+  animation: intro-out 0.9s cubic-bezier(0.7, 0, 0.2, 1) 1.15s forwards;
+}
+html:not(.has-intro) #intro { display: none; }
+.intro-inner { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.intro-orb {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: conic-gradient(var(--c1), var(--c2), var(--c3), var(--c4), var(--c1));
+  box-shadow: 0 0 60px var(--c2), 0 0 120px var(--c1);
+  animation: intro-orb 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, spin 1.2s linear infinite;
+}
+.intro-word { display: flex; font-size: 44px; font-weight: 850; letter-spacing: -0.04em; overflow: hidden; }
+.intro-word span { display: inline-block; animation: intro-ch 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(0.25s + var(--i) * 0.09s); }
+@keyframes intro-orb { 0% { transform: scale(0); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@keyframes intro-ch { from { transform: translateY(110%) rotate(12deg); opacity: 0; } }
+@keyframes intro-out {
+  0% { clip-path: circle(150% at 50% 50%); }
+  100% { clip-path: circle(0% at 50% 50%); visibility: hidden; }
+}
+/* 인트로 동안 히어로 등장을 뒤로 미룸 */
+.has-intro .hero .reveal { transition-delay: calc(var(--d, 0s) + 1.35s); }
+.has-intro .hero h1 .ch { animation-delay: calc(1.45s + var(--i) * 0.035s) !important; }
+
+/* ---------- 스크롤 진행 막대 ---------- */
+#progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 120; transform-origin: 0 50%; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4));
+  box-shadow: 0 0 12px var(--c2);
+}
+
+/* ---------- 제목 글자별 등장 ---------- */
+h1 .ch {
+  display: inline-block; opacity: 0; transform-origin: 50% 100%;
+  transform: translateY(70%) rotateX(-90deg) scale(0.8); filter: blur(8px);
+}
+h1.in .ch { animation: ch-up 0.9s cubic-bezier(0.2, 0.9, 0.25, 1.2) forwards; animation-delay: calc(0.15s + var(--i) * 0.035s); }
+@keyframes ch-up { to { opacity: 1; transform: none; filter: none; } }
+h1 .ch.sp { width: 0.28em; }
+
+/* 단어 교체(스크램블) 중 반짝임 */
+.gradient-text.scrambling { filter: drop-shadow(0 0 18px rgba(192, 132, 252, 0.8)); }
+
+/* ---------- 섹션 제목 빛 지나가기 ---------- */
+.section-head h2, .cta-card h2 {
+  background: linear-gradient(100deg, #fff 40%, #e9d5ff 46%, #f0abfc 50%, #93c5fd 54%, #fff 60%);
+  background-size: 300% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.section-head.in h2, .cta-card.in h2 { animation: sweep 2.4s 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards, sweep-loop 7s 3s linear infinite; }
+@keyframes sweep { from { background-position: 100% 0; } to { background-position: 0% 0; } }
+@keyframes sweep-loop { 0%, 70% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
+
+/* ---------- 폰 주위를 도는 앱 아이콘 ---------- */
+.phone { z-index: 5; }
+.orbit-icons { position: absolute; inset: 0; pointer-events: none; }
+.orbit-icon {
+  position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 16px;
+  box-shadow: 0 12px 30px -8px rgba(124, 58, 237, 0.8), 0 0 0 1px rgba(255,255,255,0.15);
+  will-change: transform, opacity;
+}
+.phone-stage .phone {
+  transform: rotateY(calc(-14deg + var(--ry, 0deg))) rotateX(calc(6deg + var(--rx, 0deg)));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* 화면 속 리스트가 반짝이며 하이라이트 */
+.ps-item.glow { box-shadow: 0 0 0 2px var(--hl, #7c3aed), 0 8px 24px -6px var(--hl, #7c3aed); transform: scale(1.03); transition: all 0.4s; }
+.ps-item { transition: all 0.4s; }
+
+/* ---------- 카드: 빛 줄기 + 튀어오르는 등장 ---------- */
+.shine {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; overflow: hidden;
+}
+.shine::before {
+  content: ""; position: absolute; top: -50%; bottom: -50%; width: 40%; left: -60%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: skewX(-20deg);
+}
+.card:hover .shine::before { animation: shine 0.9s ease-out; }
+@keyframes shine { to { left: 130%; } }
+.card.reveal { transform: translateY(60px) scale(0.92) rotate(-2deg); }
+.card.reveal.in { transition: opacity 0.8s, filter 0.8s, border-color 0.3s, transform 0.6s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.card-icon { animation: icon-float 5s ease-in-out infinite; animation-delay: calc(var(--d, 0s) * -10); }
+@keyframes icon-float { 50% { translate: 0 -5px; } }
+
+/* ---------- 버튼 ---------- */
+.btn-primary, .nav .btn { transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, translate 0.2s ease-out; }
+.btn-primary::after {
+  content: ""; position: absolute; inset: -3px; border-radius: inherit; z-index: -1; opacity: 0.7;
+  background: inherit; filter: blur(14px); animation: shimmer 6s linear infinite;
+}
+
+/* ---------- 커서 링 ---------- */
+#cursor {
+  position: fixed; left: 0; top: 0; width: 36px; height: 36px; margin: -18px 0 0 -18px; z-index: 250; pointer-events: none;
+  border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.7); mix-blend-mode: difference;
+  transition: width 0.25s, height 0.25s, margin 0.25s, background 0.25s, border-color 0.25s;
+}
+#cursor.big { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgba(255,255,255,0.9); border-color: transparent; }
+#cursor.down { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+
+/* ---------- 클릭 파티클 ---------- */
+#burst { position: fixed; inset: 0; z-index: 260; pointer-events: none; }
+
+/* ---------- 이용 방법 ---------- */
+.step { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s, background 0.3s; }
+.step:hover { transform: translateY(-8px); border-color: rgba(168, 85, 247, 0.5); background: rgba(168, 85, 247, 0.08); }
+.step::after {
+  content: ""; position: absolute; width: 180px; height: 180px; right: -60px; top: -60px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,85,247,0.35), transparent 70%); transition: transform 0.6s;
+}
+.step:hover::after { transform: scale(1.6); }
+.step.in .step-no { animation: num-pop 0.9s cubic-bezier(0.2, 1.5, 0.4, 1) both; animation-delay: calc(var(--d, 0s) + 0.2s); }
+@keyframes num-pop { from { transform: scale(0.3) rotate(-20deg); opacity: 0; } }
+
+/* ---------- CTA: 떠오르는 아이콘 ---------- */
+.cta-card { isolation: isolate; }
+.bubbles { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.bubble {
+  position: absolute; bottom: -70px; width: var(--s, 44px); height: var(--s, 44px); border-radius: 30%; opacity: 0;
+  animation: rise var(--t, 9s) linear infinite; animation-delay: var(--dl, 0s);
+}
+@keyframes rise {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.55; }
+  85% { opacity: 0.35; }
+  100% { transform: translateY(-520px) rotate(var(--r, 40deg)); opacity: 0; }
+}
+
+/* ---------- 마키: 아이콘 + 반대 방향 두 번째 줄 ---------- */
+.marquee-track img { width: 1.1em; height: 1.1em; border-radius: 0.3em; vertical-align: -0.15em; }
+.marquee-track.rev { animation-direction: reverse; animation-duration: 38s; margin-top: 14px; opacity: 0.55; font-size: 0.8em; }
+
+@media (max-width: 600px) {
+  .orbit-icon { width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 12px; }
+  .phone-stage .phone { transform: none; }
+  .intro-word { font-size: 36px; }
+}
+@media (hover: none), (pointer: coarse) { #cursor { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  #intro, #cursor, #burst, .orbit-icons, .bubbles { display: none !important; }
+  h1 .ch { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .section-head h2, .cta-card h2 { background: none; color: var(--fg); }
+}

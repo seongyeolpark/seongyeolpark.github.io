@@ -69,10 +69,26 @@
   const rot = $("#rotator");
   const phrases = ["바로 실행", "설치 없이", "한 번에"];
   let pi = 0;
-  if (!reduced) setInterval(() => {
-    rot.classList.add("out");
-    setTimeout(() => { pi = (pi + 1) % phrases.length; rot.textContent = phrases[pi]; rot.classList.remove("out"); }, 300);
-  }, 2600);
+  // 글자가 무작위 한글로 뒤섞였다가 새 단어로 맞춰지는 스크램블 효과
+  const POOL = "가나다라마바사아자차카타파하토스앱매일운세달꿈별빛";
+  const scramble = (to) => {
+    const from = rot.textContent, len = Math.max(from.length, to.length);
+    const q = [...Array(len)].map((_, i) => ({ to: to[i] || "", start: Math.floor(Math.random() * 10), end: 10 + Math.floor(Math.random() * 14) }));
+    let f = 0;
+    rot.classList.add("scrambling");
+    const step = () => {
+      let out = "", done = 0;
+      for (const c of q) {
+        if (f >= c.end) { out += c.to; done++; }
+        else if (f >= c.start) out += c.to === " " ? " " : POOL[Math.floor(Math.random() * POOL.length)];
+        else out += from[q.indexOf(c)] || "";
+      }
+      rot.textContent = out;
+      if (done < q.length) { f++; requestAnimationFrame(step); } else rot.classList.remove("scrambling");
+    };
+    step();
+  };
+  if (!reduced) setInterval(() => { pi = (pi + 1) % phrases.length; scramble(phrases[pi]); }, 2800);
 
   /* ---------- 앱 열기 ---------- */
   const track = (a) => {
@@ -84,7 +100,8 @@
   const openApp = (a) => {
     track(a);
     if (isMobile) {
-      location.href = a.link;
+      // 터치 폭죽이 보이도록 아주 잠깐 기다렸다 이동
+      setTimeout(() => { location.href = a.link; }, reduced ? 0 : 280);
       // 토스 앱이 없거나 링크가 열리지 않으면 검색 안내
       const t = setTimeout(() => { if (!document.hidden) toast(`토스 앱에서 '${a.name}'을(를) 검색해 보세요`, 4000); }, 1600);
       addEventListener("visibilitychange", () => clearTimeout(t), { once: true });
@@ -169,12 +186,32 @@
     }));
   };
   resize(); addEventListener("resize", resize);
+  // 마우스 근처 별자리 선 + 별똥별
+  let mx = -999, my = -999;
+  addEventListener("pointermove", (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
+  let meteors = [];
   const draw = () => {
     ctx.clearRect(0, 0, W, H);
     for (const s of stars) {
       s.t += 0.02; s.y -= s.v; if (s.y < 0) { s.y = H; s.x = Math.random() * W; }
-      ctx.globalAlpha = 0.35 + Math.sin(s.t) * 0.3;
-      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+      const dx = s.x - mx, dy = s.y - my, d = Math.hypot(dx, dy);
+      if (d < 140) {
+        ctx.globalAlpha = (1 - d / 140) * 0.55;
+        ctx.strokeStyle = "#c4b5fd"; ctx.lineWidth = 0.6;
+        ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(mx, my); ctx.stroke();
+      }
+      ctx.globalAlpha = 0.35 + Math.sin(s.t) * 0.3 + (d < 140 ? 0.4 : 0);
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(s.x, s.y, s.r * (d < 140 ? 1.8 : 1), 0, 7); ctx.fill();
+    }
+    if (Math.random() < 0.012) meteors.push({ x: Math.random() * W * 1.2, y: -20, v: 9 + Math.random() * 7, life: 1 });
+    meteors = meteors.filter((m) => m.life > 0 && m.y < H + 50);
+    for (const m of meteors) {
+      m.x -= m.v * 0.7; m.y += m.v * 0.5; m.life -= 0.012;
+      const g = ctx.createLinearGradient(m.x, m.y, m.x + 120, m.y - 85);
+      g.addColorStop(0, "rgba(255,255,255,0.95)"); g.addColorStop(0.3, "rgba(196,181,253,0.5)"); g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.globalAlpha = m.life; ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x + 120, m.y - 85); ctx.stroke();
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(m.x, m.y, 1.8, 0, 7); ctx.fill();
     }
     if (!reduced) requestAnimationFrame(draw);
   };

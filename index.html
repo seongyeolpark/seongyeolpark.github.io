@@ -15,8 +15,22 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="fx.css" />
+  <script>
+    // 인트로는 세션당 한 번만, 동작 줄이기 설정이면 생략
+    try {
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("introSeen")) {
+        document.documentElement.classList.add("has-intro");
+        sessionStorage.setItem("introSeen", "1");
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
+  <div id="intro" aria-hidden="true"><div class="intro-inner"><span class="intro-orb"></span><div class="intro-word"></div></div></div>
+  <div id="progress" aria-hidden="true"></div>
+  <div id="cursor" aria-hidden="true"></div>
+  <canvas id="burst" aria-hidden="true"></canvas>
   <!-- 배경 효과 -->
   <div class="aurora" aria-hidden="true">
     <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
@@ -135,5 +149,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
   <script src="apps.js"></script>
   <script src="main.js" defer></script>
+  <script src="fx.js" defer></script>
 </body>
 </html>
